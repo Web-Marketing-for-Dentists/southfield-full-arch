@@ -203,6 +203,21 @@ test("noindex, GA4 and WhatConverts ship on every entry page", async ({
     await expect(
       page.locator('head script[src="//s.ksrndkehqnwntyxlhgto.com/177101.js"]')
     ).toHaveCount(1);
+    await expect(
+      page.locator('head link[rel="icon"][href="/favicon-32.png"]')
+    ).toHaveCount(1);
+  }
+});
+
+test("favicon files are served", async ({ request }) => {
+  for (const file of [
+    "/favicon-32.png",
+    "/icon-192.png",
+    "/apple-touch-icon.png",
+  ]) {
+    const response = await request.get(file);
+    expect(response.status(), file).toBe(200);
+    expect(response.headers()["content-type"], file).toContain("image/png");
   }
 });
 

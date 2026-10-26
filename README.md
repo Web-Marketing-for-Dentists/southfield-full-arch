@@ -65,6 +65,7 @@ The build creates entry files for `/terms-of-service/`, `/privacy-policy/`, `/di
 | Appointment fields, validation, optional SMS consent | `client/src/components/AppointmentRequestForm.tsx` |
 | Terms of Service and Privacy Policy | `client/src/pages/LegalPages.tsx` |
 | Bundled images | `client/public/images/` |
+| Favicon and touch icon (practice logo, matches southfieldsmile.com) | `client/public/favicon-32.png`, `icon-192.png`, `apple-touch-icon.png` |
 | Lead notification emails (admin and patient) | `emails/*.html` |
 | Lead endpoint, recipients, sender | `functions/api/appointment-request.ts`, `wrangler.jsonc` |
 
