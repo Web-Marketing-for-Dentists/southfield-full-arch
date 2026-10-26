@@ -7,7 +7,7 @@ Editable React source for the Southfield Family Dental Center full-arch campaign
 The current campaign (creative refreshed October 26, 2026 from the V2 export) includes:
 
 - **“Restore Your Confidence With Dental Implants”** as the hero headline, over a decorative hero background video (`client/public/videos/`, separate desktop and mobile MP4s, poster fallback for reduced motion).
-- Two per-arch options: **$15,000 PMMA acrylic** and **$18,000 final zirconia**, with a **$3,000 per-arch upgrade** to final zirconia.
+- Two per-arch options: **$14,990 PMMA acrylic** and **$17,990 final zirconia**, with a **$3,000 per-arch upgrade** to final zirconia.
 - Dr. Oleg’s authority panel with on-scroll count-up figures (**26+ years**, **1,000+ implants placed**). Treat these as approved marketing figures and verify them before changing them.
 - A weekly promotion countdown ending each **Sunday at 11:59 PM Eastern** (`client/src/components/WeeklyPromotionCountdown.tsx`, `client/src/lib/promotionTime.ts`).
 - The autoplay five-case patient gallery and Troy’s supplied patient-story thumbnail.

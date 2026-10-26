@@ -38,7 +38,7 @@ for (const width of [320, 390, 1440]) {
     await expect(page.locator("h1")).toContainText("With Dental Implants");
     await expect(page.locator("form")).toHaveCount(0);
     const hero = page.locator("main > section").first();
-    await expect(hero).toContainText("$15,000");
+    await expect(hero).toContainText("$14,990");
     await expect(
       hero.locator("[data-weekly-promotion-countdown]")
     ).toBeVisible();
