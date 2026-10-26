@@ -1,74 +1,116 @@
 [
   {
-    "file": "client/public/images/dr-oleg-preferred_420e0c72.jpg",
-    "width": 500,
-    "height": 700,
-    "bytes": 40656
+    "file": "client/public/images/anicia-care-team_92f11514.webp",
+    "bytes": 75444,
+    "type": "images",
+    "width": 1280,
+    "height": 720
   },
   {
-    "file": "client/public/images/google-g_ecb1f1a4.png",
+    "file": "client/public/images/dr-oleg-preferred_420e0c72.jpg",
+    "bytes": 40656,
+    "type": "images",
     "width": 500,
-    "height": 512,
-    "bytes": 7789
+    "height": 700
+  },
+  {
+    "file": "client/public/images/google-wordmark-supplied_00e6483a.webp",
+    "bytes": 11232,
+    "type": "images",
+    "width": 696,
+    "height": 244
+  },
+  {
+    "file": "client/public/videos/hero-desktop-960x400_28f710b1.mp4",
+    "bytes": 1561244,
+    "type": "videos",
+    "width": 960,
+    "height": 400,
+    "durationSeconds": 32.25
+  },
+  {
+    "file": "client/public/videos/hero-mobile-640x266_c2132993.mp4",
+    "bytes": 751876,
+    "type": "videos",
+    "width": 640,
+    "height": 266,
+    "durationSeconds": 32.25
+  },
+  {
+    "file": "client/public/images/hero-poster-clean_c8f4bf14.webp",
+    "bytes": 18634,
+    "type": "images",
+    "width": 960,
+    "height": 400
   },
   {
     "file": "client/public/images/logo_849d8385.png",
+    "bytes": 4395,
+    "type": "images",
     "width": 207,
-    "height": 57,
-    "bytes": 4395
+    "height": 57
   },
   {
-    "file": "client/public/images/mike-frame_10786298.jpg",
-    "width": 1280,
-    "height": 720,
-    "bytes": 105857
+    "file": "client/public/images/mike-interview-thumbnail_bac10697.webp",
+    "bytes": 95944,
+    "type": "images",
+    "width": 930,
+    "height": 900
   },
   {
     "file": "client/public/images/southfield-full-arch-case-1_0f9f171d.webp",
+    "bytes": 276700,
+    "type": "images",
     "width": 1536,
-    "height": 1024,
-    "bytes": 276700
+    "height": 1024
   },
   {
     "file": "client/public/images/southfield-full-arch-case-2_13cc51c7.webp",
+    "bytes": 225534,
+    "type": "images",
     "width": 1536,
-    "height": 1024,
-    "bytes": 225534
+    "height": 1024
   },
   {
     "file": "client/public/images/southfield-full-arch-case-3_850effdd.webp",
+    "bytes": 275792,
+    "type": "images",
     "width": 1536,
-    "height": 1024,
-    "bytes": 275792
+    "height": 1024
   },
   {
     "file": "client/public/images/southfield-full-arch-case-4_16f755ac.webp",
+    "bytes": 315776,
+    "type": "images",
     "width": 1536,
-    "height": 1024,
-    "bytes": 315776
+    "height": 1024
   },
   {
     "file": "client/public/images/southfield-full-arch-case-5_14ccd66b.webp",
+    "bytes": 280416,
+    "type": "images",
     "width": 1536,
-    "height": 1024,
-    "bytes": 280416
+    "height": 1024
   },
   {
     "file": "client/public/images/southfield-location-map_9a5caa63.png",
+    "bytes": 565358,
+    "type": "images",
     "width": 1441,
-    "height": 1230,
-    "bytes": 565358
+    "height": 1230
   },
   {
-    "file": "client/public/images/troy-frame_4c518002.jpg",
+    "file": "client/public/images/troys-story-thumbnail-1280_a2d7c02f.webp",
+    "bytes": 86340,
+    "type": "images",
     "width": 1280,
-    "height": 720,
-    "bytes": 162956
+    "height": 720
   },
   {
-    "file": "client/public/images/zirconia-arch-black-studio-960_7694b2ae.webp",
-    "width": 960,
-    "height": 1440,
-    "bytes": 45082
+    "file": "client/public/images/zirconia-implant-illustration_20e39b51.webp",
+    "bytes": 11924,
+    "type": "images",
+    "width": 336,
+    "height": 319
   }
 ]

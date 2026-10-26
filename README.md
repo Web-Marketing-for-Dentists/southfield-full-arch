@@ -2,6 +2,18 @@
 
 Editable React source for the Southfield Family Dental Center full-arch campaign. This is a portable export of the approved website, including the mobile click-to-call footer, automatic patient-case gallery, appointment-request pop-up, Terms of Service, and Privacy Policy.
 
+## What is in the page
+
+The current campaign (creative refreshed October 26, 2026 from the V2 export) includes:
+
+- **“Restore Your Confidence With Dental Implants”** as the hero headline, over a decorative hero background video (`client/public/videos/`, separate desktop and mobile MP4s, poster fallback for reduced motion).
+- Two per-arch options: **$15,000 PMMA acrylic** and **$18,000 final zirconia**, with a **$3,000 per-arch upgrade** to final zirconia.
+- Dr. Oleg’s authority panel with on-scroll count-up figures (**26+ years**, **1,000+ implants placed**). Treat these as approved marketing figures and verify them before changing them.
+- A weekly promotion countdown ending each **Sunday at 11:59 PM Eastern** (`client/src/components/WeeklyPromotionCountdown.tsx`, `client/src/lib/promotionTime.ts`).
+- The autoplay five-case patient gallery and Troy’s supplied patient-story thumbnail.
+
+The V2 export shipped without tracking, lead delivery, or the DNI swap number. Those were kept from this repository: GA4 and WhatConverts in `client/index.html`, the phone constants in `client/src/lib/phone.ts`, the appointment form, popup, Pages Function, and email templates. When pulling future creative from a V2-style export, copy `Home.tsx`, `index.css`, new components, and media only, then re-point any hard-coded phone number at `@/lib/phone`.
+
 ## Run locally
 
 Install **Node.js 22.12 or later** and use npm:
@@ -45,6 +57,10 @@ The build creates entry files for `/terms-of-service/`, `/privacy-policy/`, `/di
 | Google Fonts and search/social metadata | `client/index.html` |
 | GA4 and WhatConverts tracking tags | `client/index.html` |
 | Phone number (DNI swap number) | `client/src/lib/phone.ts` |
+| Weekly promotion display and Eastern-time deadline | `client/src/components/WeeklyPromotionCountdown.tsx`, `client/src/lib/promotionTime.ts` |
+| Hero video loading, reduced-motion behavior, poster fallback | `client/src/components/HeroVideoBackground.tsx` |
+| On-scroll authority-number animation | `client/src/components/CountUpNumber.tsx` |
+| Bundled hero videos | `client/public/videos/` |
 | Appointment pop-up layout, fallback scheduler | `client/src/components/AppointmentRequestPopup.tsx` |
 | Appointment fields, validation, optional SMS consent | `client/src/components/AppointmentRequestForm.tsx` |
 | Terms of Service and Privacy Policy | `client/src/pages/LegalPages.tsx` |

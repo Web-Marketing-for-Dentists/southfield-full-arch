@@ -34,9 +34,19 @@ for (const width of [320, 390, 1440]) {
     // Never send test traffic or synthetic leads to GA4 or WhatConverts.
     await page.route(TRACKING_HOSTS, route => route.abort());
     await page.goto("/");
-    await expect(page.locator("h1")).toContainText("Two full-arch options:");
+    await expect(page.locator("h1")).toContainText("Restore Your Confidence");
+    await expect(page.locator("h1")).toContainText("With Dental Implants");
     await expect(page.locator("form")).toHaveCount(0);
-    await expect(page.locator("img").first()).toBeVisible();
+    const hero = page.locator("main > section").first();
+    await expect(hero).toContainText("$15,000");
+    await expect(
+      hero.locator("[data-weekly-promotion-countdown]")
+    ).toBeVisible();
+    const thumbnail = page.locator("[data-troy-supplied-thumbnail]");
+    await expect(thumbnail).toHaveAttribute(
+      "src",
+      /^\/images\/troys-story-thumbnail-/
+    );
     for (const image of await page.locator("img").all()) {
       if (!(await image.isVisible())) continue;
       await image.scrollIntoViewIfNeeded();
@@ -47,14 +57,23 @@ for (const width of [320, 390, 1440]) {
     const sectionIds = await page
       .locator("main > section")
       .evaluateAll(elements => elements.map(e => e.id));
-    expect(sectionIds[1]).toBe("materials");
-    expect(sectionIds[2]).toBe("consult");
+    expect(sectionIds.slice(1, 5)).toEqual([
+      "team",
+      "reviews",
+      "materials",
+      "consult",
+    ]);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth
       )
     ).toBeTruthy();
+    await expect(page.locator("[data-count-up-display]")).toHaveText([
+      "26+",
+      "1,000+",
+    ]);
     if (width < 640) {
+      // Mobile click-to-call must use the WhatConverts DNI swap number.
       await expect(
         page
           .getByRole("region", {
@@ -64,10 +83,10 @@ for (const width of [320, 390, 1440]) {
           .getByRole("link")
       ).toHaveAttribute("href", "tel:+12482152058");
     }
-    const trigger = page
-      .locator("main > section")
-      .first()
-      .getByRole("button", { name: "SCHEDULE FREE CONSULTATION", exact: true });
+    const trigger = hero.getByRole("button", {
+      name: "SCHEDULE FREE CONSULTATION",
+      exact: true,
+    });
     await trigger.click();
     const dialog = page.getByRole("dialog", {
       name: "Request an Appointment",
@@ -187,6 +206,17 @@ test("noindex, GA4 and WhatConverts ship on every entry page", async ({
   }
 });
 
+test("every visible phone number is the DNI swap number", async ({ page }) => {
+  await page.route(TRACKING_HOSTS, route => route.abort());
+  await page.goto("/");
+  const hrefs = await page
+    .locator('a[href^="tel:"]')
+    .evaluateAll(links => links.map(a => a.getAttribute("href")));
+  expect(hrefs.length).toBeGreaterThan(0);
+  expect(new Set(hrefs)).toEqual(new Set(["tel:+12482152058"]));
+  expect(await page.locator("body").innerText()).not.toContain("569-6304");
+});
+
 test("policy routes load directly and retain the home link", async ({
   page,
 }) => {
@@ -200,7 +230,7 @@ test("policy routes load directly and retain the home link", async ({
     await page
       .getByRole("link", { name: "Back to the full-arch page", exact: true })
       .click();
-    await expect(page.locator("h1")).toContainText("Two full-arch options:");
+    await expect(page.locator("h1")).toContainText("Restore Your Confidence");
   }
 });
 
@@ -230,4 +260,39 @@ test("#verified-example deep link lands on the financing example", async ({
   const headerBox = (await page.locator("header").first().boundingBox())!;
   const headingBox = (await heading.boundingBox())!;
   expect(headingBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+});
+
+test("Troy thumbnail opens the correct video", async ({ page }) => {
+  await page.route(TRACKING_HOSTS, route => route.abort());
+  // Test the UI and destination without sending a request to the video provider.
+  await page.route("https://drive.google.com/**", route =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><title>Test video frame</title>",
+    })
+  );
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Watch Troy’s patient story", exact: true })
+    .click();
+  const frame = page.locator('iframe[title="Troy’s patient story"]');
+  await expect(frame).toBeVisible();
+  await expect(frame).toHaveAttribute(
+    "src",
+    "https://drive.google.com/file/d/1pofu2ZbnzJT8IC2l9ShAee0YawaIujBM/preview"
+  );
+});
+
+test("doctor numbers count up once on scroll", async ({ page }) => {
+  await page.route(TRACKING_HOSTS, route => route.abort());
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const stats = page.locator("[data-doctor-authority-stats]");
+  const numbers = stats.locator("[data-count-up-display]");
+  await expect(numbers).toHaveText(["0+", "0+"]);
+  await stats.scrollIntoViewIfNeeded();
+  await expect(numbers).toHaveText(["26+", "1,000+"]);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await stats.scrollIntoViewIfNeeded();
+  await expect(numbers).toHaveText(["26+", "1,000+"]);
 });

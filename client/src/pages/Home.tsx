@@ -23,6 +23,9 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "wouter";
+import WeeklyPromotionCountdown from "@/components/WeeklyPromotionCountdown";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
+import CountUpNumber from "@/components/CountUpNumber";
 import AppointmentRequestPopup, {
   AppointmentPopupTrigger,
 } from "@/components/AppointmentRequestPopup";
@@ -30,7 +33,7 @@ import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 
 const DIRECTIONS_URL = "https://maps.app.goo.gl/ATaUCHHLT3gZgNn9A";
 const heroSummary =
-  "Our $15,000 arch uses PMMA acrylic, which can wear over time and may need repair or replacement. For $3,000 more, zirconia resists chipping, staining, and odor, so it's built to be your permanent smile.";
+  "Replace missing or failing teeth with one complete upper or lower arch.";
 const OFFICE_HOURS: Record<number, { open: number; close: number } | null> = {
   0: null,
   1: { open: 8, close: 17 },
@@ -70,14 +73,18 @@ function trackEvent(
   );
 }
 
-const included = [
+const pmmaIncluded = [
   "Consultation, second opinion and clear treatment planning",
   "Fixed PMMA acrylic teeth on treatment day",
   "Full-arch implant placement and removal of the teeth being replaced",
   "Any grafting included in your treatment plan",
-  "Final permanent zirconia bridge — a smooth ceramic restoration",
   "All follow-up appointments through final delivery",
   "Final-fit adjustments and home-care guidance",
+];
+
+const zirconiaIncluded = [
+  ...pmmaIncluded,
+  "Final permanent zirconia bridge — a smooth ceramic restoration",
   "Lifetime zirconia bridge warranty with prescribed maintenance*",
 ];
 
@@ -111,13 +118,13 @@ const pricePositions = [
 const comparisonQuestions = [
   [
     "What is the final restoration?",
-    "$18k: final permanent zirconia",
-    "Final zirconia or PMMA acrylic?",
+    "We tell you before treatment: PMMA at $15k, zirconia at $18k",
+    "Ask what material you finish with",
   ],
   [
     "Is there a lower-price option?",
-    "$15k: fixed PMMA acrylic teeth",
-    "What material is actually included?",
+    "Yes, $15,000, and we explain the tradeoff",
+    "Ask what the lower price leaves out",
   ],
   [
     "What care is included?",
@@ -209,7 +216,36 @@ const reviewProof: PatientReview[] = [
   },
 ];
 
+// Smile/award figures: client-approved Dr.OlegBillboardStats.docx.
+// Implant-placement count: supplied by Alex in this task on October 26, 2026.
+// Update this single list when the practice supplies revised, dated figures.
+const doctorAuthorityStats = [
+  {
+    value: "26+",
+    label: "Years creating smile makeovers",
+    detail: "Smile-design experience",
+  },
+  { value: "1,000+", label: "Implants placed", detail: "" },
+  {
+    value: "2×",
+    label: "Top Dentist recognitions",
+    detail: "Hour Detroit magazine · 2024 & 2025",
+  },
+];
+
 const faqs = [
+  [
+    "What’s included in the $15,000 offer?",
+    "The per-arch offer includes consultation and clear treatment planning, full-arch implant placement, removal of the teeth being replaced, grafting in your plan, fixed PMMA acrylic teeth on treatment day, follow-up appointments through final delivery, final-fit adjustments, and home-care guidance. IV sedation is optional and quoted separately. A final zirconia bridge is available for $3,000 more per arch.",
+  ],
+  [
+    "What are Southfield’s two full-arch options?",
+    "The $15,000 option finishes with fixed PMMA acrylic teeth. For $3,000 more per arch, the $18,000 option includes PMMA teeth during healing and then a final permanent zirconia bridge.",
+  ],
+  [
+    "Can I start with PMMA and move to zirconia later?",
+    "Southfield describes the current material difference as $3,000 per arch. The team will explain the timing and treatment steps for moving from PMMA to final zirconia before you choose an option.",
+  ],
   [
     "Is zirconia worth $3,000 more?",
     "The $3,000 difference changes the teeth you finish with. Zirconia is stronger than PMMA acrylic, easier to keep clean, and better at resisting chips, stains, and odor. PMMA costs less and is easier to repair. The better choice depends on which tradeoffs matter most to you.",
@@ -233,14 +269,6 @@ const faqs = [
   [
     "What if I need both upper and lower arches?",
     "The $15,000 PMMA and $18,000 zirconia offers are shown per arch. If you’re considering both, the team can walk you through a complete treatment plan and total that covers your planned care, final material, and any optional IV sedation.",
-  ],
-  [
-    "What are Southfield’s two full-arch options?",
-    "The $15,000 option finishes with fixed PMMA acrylic teeth. For $3,000 more per arch, the $18,000 option includes PMMA teeth during healing and then a final permanent zirconia bridge.",
-  ],
-  [
-    "Can I start with PMMA and move to zirconia later?",
-    "Southfield describes the current material difference as $3,000 per arch. The team will explain the timing and treatment steps for moving from PMMA to final zirconia before you choose an option.",
   ],
   [
     "What is PMMA in everyday language?",
@@ -268,7 +296,7 @@ const faqs = [
   ],
   [
     "Are tooth removal and grafting included?",
-    "Yes. The $18,000 package includes the tooth removal and grafting in your written full-arch treatment plan. Everything is reviewed with you before treatment begins.",
+    "Yes. Both the $15,000 PMMA and $18,000 zirconia options include the tooth removal and grafting in your full-arch treatment plan. Everything is reviewed with you before treatment begins.",
   ],
   [
     "Are financing options available?",
@@ -284,14 +312,14 @@ function Logo() {
   return (
     <a
       href="#top"
-      className="flex items-center gap-3"
+      className="flex shrink-0 items-center gap-3"
       aria-label="Southfield Family Dental Center home"
     >
-      <span className="logo-shell">
+      <span className="logo-shell max-sm:p-0">
         <img
           src="/images/logo_849d8385.png"
           alt="Southfield Family Dental Center"
-          className="h-[43px] w-auto"
+          className="h-[30px] w-auto min-[375px]:h-[34px] sm:h-[43px]"
         />
       </span>
       <span className="hidden border-l border-plum/15 pl-3 text-[10px] font-bold uppercase leading-[1.3] tracking-[0.19em] text-plum/72 sm:block">
@@ -344,15 +372,11 @@ function GoogleReviewBadge({
   placement?: string;
 }) {
   const shellClass = large
-    ? "w-full gap-5 rounded-[1.75rem] px-6 py-5 sm:px-8 sm:py-6"
+    ? "w-full flex-col !items-start gap-4 rounded-[1.75rem] px-6 py-5 sm:flex-row sm:!items-center sm:gap-6 sm:px-8 sm:py-6"
     : compact
       ? "gap-3 rounded-2xl px-3.5 py-2.5"
       : "gap-3 rounded-2xl px-4 py-3";
-  const logoClass = large
-    ? "h-14 w-14 sm:h-16 sm:w-16"
-    : compact
-      ? "h-7 w-7"
-      : "h-9 w-9";
+  const logoClass = large ? "w-28 sm:w-36" : compact ? "w-[68px]" : "w-20";
 
   return (
     <div
@@ -360,14 +384,20 @@ function GoogleReviewBadge({
       aria-label="Southfield Family Dental Center Google rating: 4.7 from 2,589 reviews as of September 2026"
       className={`inline-flex items-center border border-plum/12 bg-white text-ink shadow-[0_18px_50px_rgba(53,17,61,0.1)] ${shellClass}`}
     >
-      <img
-        src="/images/google-g_ecb1f1a4.png"
-        alt="Google"
-        className={`${logoClass} shrink-0 object-contain`}
-      />
+      <span
+        className={`shrink-0 border-plum/10 ${large ? "sm:border-r sm:pr-4" : "border-r pr-3 sm:pr-4"}`}
+      >
+        <img
+          src="/images/google-wordmark-supplied_00e6483a.webp"
+          alt="Google"
+          width={696}
+          height={244}
+          className={`${logoClass} h-auto object-contain`}
+        />
+      </span>
       <span>
         {large && (
-          <span className="mb-1 block text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink/48 sm:text-xs">
+          <span className="mb-2 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-ink/48 sm:text-xs">
             Southfield Family Dental Center
           </span>
         )}
@@ -383,17 +413,38 @@ function GoogleReviewBadge({
           >
             4.7
           </strong>
-          <span className="flex text-[#f4a321]" aria-label="4.7 out of 5 stars">
-            {[1, 2, 3, 4, 5].map(star => (
-              <Star
-                key={star}
-                className={`${large ? "h-5 w-5 sm:h-6 sm:w-6" : compact ? "h-3 w-3" : "h-3.5 w-3.5"} fill-current`}
-              />
-            ))}
+          <span
+            className="relative inline-flex"
+            aria-label="4.7 out of 5 stars"
+          >
+            <span className="flex text-ink/15" aria-hidden="true">
+              {[1, 2, 3, 4, 5].map(star => (
+                <Star
+                  key={star}
+                  className={`${large ? "h-4 w-4 sm:h-6 sm:w-6" : "h-3 w-3"} fill-current`}
+                />
+              ))}
+            </span>
+            <span
+              className="absolute inset-y-0 left-0 flex w-[94%] overflow-hidden text-[#f4a321]"
+              aria-hidden="true"
+            >
+              {[1, 2, 3, 4, 5].map(star => (
+                <Star
+                  key={star}
+                  className={`${large ? "h-4 w-4 sm:h-6 sm:w-6" : "h-3 w-3"} shrink-0 fill-current`}
+                />
+              ))}
+            </span>
           </span>
         </span>
         <span
-          className={`${large ? "mt-2 text-xs sm:text-sm" : "mt-0.5 text-[10px]"} block font-bold uppercase tracking-[0.12em] text-ink/58`}
+          className={`mt-1 block font-semibold leading-4 text-plum ${large ? "text-sm sm:text-base" : "text-[10px]"}`}
+        >
+          Verified Customer Reviews
+        </span>
+        <span
+          className={`${large ? "mt-2 text-[10px] sm:text-sm" : "mt-0.5 text-[9px]"} block font-bold leading-4 text-ink/58`}
         >
           2,589 Google reviews · Sep 2026
         </span>
@@ -425,13 +476,16 @@ function WarrantyBadge() {
 function ConversionActions({
   dark = false,
   compact = false,
+  narrow = false,
   placement = "page",
 }: {
   dark?: boolean;
   compact?: boolean;
+  /** Slightly smaller primary text so the phone number fits on one line in tight columns. */
+  narrow?: boolean;
   placement?: string;
 }) {
-  const primary = `inline-flex items-center justify-center gap-2 rounded-full font-bold uppercase tracking-[0.08em] transition duration-200 active:scale-[0.97] ${compact ? "min-h-11 px-5 text-[11px]" : "min-h-13 px-6 text-sm sm:px-7"}`;
+  const primary = `inline-flex items-center justify-center gap-2 rounded-full font-bold uppercase tracking-[0.08em] transition duration-200 active:scale-[0.97] ${compact ? "min-h-11 px-5 text-[11px]" : narrow ? "min-h-13 whitespace-nowrap px-5 text-[13px] sm:px-6" : "min-h-13 px-6 text-sm sm:px-7"}`;
   const secondary = `inline-flex min-h-10 items-center justify-center gap-2 rounded-full border font-bold uppercase tracking-[0.07em] transition duration-200 active:scale-[0.97] ${compact ? "px-3.5 text-[9px]" : "px-4 text-[10px]"}`;
 
   return (
@@ -659,6 +713,7 @@ export default function Home() {
   const [activeVideo, setActiveVideo] = useState<{
     name: string;
     fileId: string;
+    kind?: "patient" | "team";
   } | null>(null);
 
   // The page renders client-side, so the browser's native jump to a URL
@@ -706,8 +761,25 @@ export default function Home() {
         className="min-h-screen overflow-x-hidden bg-cream pb-[calc(7rem+env(safe-area-inset-bottom))] text-ink selection:bg-orchid selection:text-white sm:pb-0"
       >
         <header className="sticky top-0 z-50 border-b border-amber/70 bg-white/95 text-ink shadow-[0_8px_28px_rgba(53,17,61,0.08)] backdrop-blur-xl">
-          <div className="container flex h-[78px] items-center justify-between">
+          <div className="container flex h-[78px] items-center justify-between gap-2 sm:gap-0">
             <Logo />
+            <a
+              href={DIRECTIONS_URL}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Get directions to 18800 West 10 Mile Road, Southfield, MI 48075"
+              onClick={() =>
+                trackEvent("cta_click", {
+                  cta_type: "directions",
+                  placement: "mobile_header",
+                  destination: "google_maps",
+                })
+              }
+              className="flex min-h-11 flex-1 flex-col justify-center whitespace-nowrap text-center text-[11px] leading-[1.5] text-plum transition-colors hover:text-orchid min-[375px]:text-xs sm:hidden"
+            >
+              <span className="font-bold">18800 W 10 Mile Rd</span>
+              <span className="text-ink/65">Southfield, MI 48075</span>
+            </a>
             <nav
               className="hidden items-center gap-7 xl:flex"
               aria-label="Primary navigation"
@@ -730,7 +802,7 @@ export default function Home() {
             </div>
             <button
               type="button"
-              className="grid h-11 w-11 place-items-center text-plum xl:hidden"
+              className="grid h-11 w-11 shrink-0 place-items-center text-plum xl:hidden"
               aria-label="Toggle navigation"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(open => !open)}
@@ -766,73 +838,76 @@ export default function Home() {
 
         <main>
           {/* First decision zone: clear pricing, simple timing, verified proof */}
-          <section className="relative overflow-hidden py-8 sm:py-14 lg:py-20">
-            <div className="hero-orb absolute -right-48 -top-44 h-[680px] w-[680px] rounded-full" />
+          <section className="relative isolate overflow-hidden bg-[#f8f5ee] py-8 sm:py-14 lg:py-20">
+            <HeroVideoBackground
+              desktopSrc="/videos/hero-desktop-960x400_28f710b1.mp4"
+              mobileSrc="/videos/hero-mobile-640x266_c2132993.mp4"
+              poster="/images/hero-poster-clean_c8f4bf14.webp"
+            />
             <div className="container relative grid items-start gap-7 sm:gap-12 lg:grid-cols-[1.13fr_0.87fr] lg:gap-14">
               <div className="max-w-[720px] sm:pt-3">
                 <Kicker>Full-arch implants · Southfield, Michigan</Kicker>
                 <h1 className="mt-3 font-display text-[clamp(2.2rem,9.4vw,2.6rem)] font-bold leading-[0.98] tracking-[-0.045em] sm:mt-5 sm:text-[clamp(2.65rem,4.5vw,4.2rem)] sm:leading-[0.96] sm:tracking-[-0.052em]">
-                  <span className="block">Two full-arch options:</span>
-                  <span className="block">$15,000 and $18,000.</span>
-                  <span className="block text-plum">
-                    Here's why most patients choose zirconia.
-                  </span>
+                  <span className="block">Restore Your Confidence</span>
+                  <span className="block text-plum">With Dental Implants</span>
                 </h1>
-                <p className="mt-5 hidden max-w-2xl text-lg leading-8 text-ink/72 sm:block">
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/72 sm:mt-5 sm:text-lg sm:leading-8">
                   {heroSummary}
                 </p>
                 <div className="mt-5 rounded-[1.5rem] border border-plum/10 bg-white p-5 shadow-[0_18px_55px_rgba(53,17,61,0.08)] sm:mt-7 sm:p-6">
                   <div className="flex flex-wrap items-end justify-between gap-3">
                     <div>
                       <p className="eyebrow text-orchid">
-                        Full-arch treatment offer
+                        Your fixed-teeth treatment package
                       </p>
                       <div className="mt-2 flex items-end gap-2 sm:gap-3">
                         <p className="font-display text-[clamp(3.1rem,6vw,5.6rem)] leading-none tracking-[-0.055em] text-plum">
-                          $18,000
+                          $15,000
                         </p>
                         <p className="mb-1 whitespace-nowrap text-sm font-bold uppercase tracking-[0.1em] text-ink/48 sm:mb-2">
                           per arch
                         </p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2 pb-2">
-                      <span className="rounded-full bg-amber px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-plum">
-                        Includes final zirconia
-                      </span>
-                    </div>
                   </div>
                   <p className="mt-4 border-t border-plum/10 pt-4 text-sm leading-6 text-ink/66">
                     Includes implants, removal of the teeth being replaced,
-                    grafting in your plan, fixed teeth during healing, follow-up
-                    care, and final zirconia. IV sedation is optional and quoted
-                    separately.
+                    grafting in your plan, fixed PMMA acrylic teeth on treatment
+                    day, and follow-up care through final delivery.
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-ink/66">
+                    <strong className="text-plum">
+                      Your treatment and price are explained before you begin.
+                    </strong>{" "}
+                    IV sedation is optional and quoted separately.
                   </p>
                   <p className="mt-3 rounded-xl bg-mist px-4 py-2.5 text-xs leading-5 text-plum sm:mt-4 sm:py-3">
-                    <strong>+$3,000 vs. PMMA acrylic per arch.</strong> See how
-                    the two final materials compare below.
+                    <strong>
+                      Choose final zirconia for $3,000 more per arch.
+                    </strong>{" "}
+                    Receive PMMA teeth during healing, followed by a stronger
+                    ceramic bridge with a lifetime zirconia warranty, subject to
+                    prescribed maintenance and written terms.
                   </p>
+                  <WeeklyPromotionCountdown />
                 </div>
-                <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/72 sm:hidden">
-                  {heroSummary}
-                </p>
                 <div className="mt-5 sm:mt-6">
                   <ConversionActions placement="hero" />
                 </div>
                 <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <GoogleReviewBadge compact placement="hero" />
                   <a
-                    href="#options"
+                    href="#included"
                     onClick={() =>
                       trackEvent("cta_click", {
-                        cta_type: "price_details",
+                        cta_type: "inclusion_details",
                         placement: "hero",
-                        destination: "options",
+                        destination: "included",
                       })
                     }
                     className="inline-flex items-center gap-2 text-sm font-bold text-orchid"
                   >
-                    Compare PMMA and zirconia <ArrowRight className="h-4 w-4" />
+                    See what’s included <ArrowRight className="h-4 w-4" />
                   </a>
                 </div>
               </div>
@@ -850,71 +925,241 @@ export default function Home() {
                       fileId: "1pofu2ZbnzJT8IC2l9ShAee0YawaIujBM",
                     });
                   }}
-                  aria-label="Watch Troy’s patient story, 30 seconds"
-                  className="group relative block w-full overflow-hidden rounded-[1.6rem] bg-plum text-left shadow-[0_28px_80px_rgba(53,17,61,0.2)]"
+                  aria-label="Watch Troy’s patient story"
+                  className="group block w-full overflow-hidden rounded-[1.6rem] border border-plum/10 bg-plum text-left shadow-[0_28px_80px_rgba(53,17,61,0.2)]"
                 >
                   <img
-                    src="/images/troy-frame_4c518002.jpg"
-                    alt="Troy smiling during his treatment experience at Southfield Family Dental"
-                    className="aspect-[16/10] w-full object-cover"
+                    data-troy-supplied-thumbnail
+                    src="/images/troys-story-thumbnail-1280_a2d7c02f.webp"
+                    alt="Troy’s story, Southfield implant patient: I love my new smile"
+                    width={1280}
+                    height={720}
+                    decoding="async"
+                    className="block h-auto w-full object-contain transition duration-200 group-hover:brightness-105"
                   />
-                  <span className="absolute inset-0 bg-gradient-to-t from-plum/90 via-plum/12 to-transparent" />
-                  <span className="absolute left-4 right-4 top-4 sm:left-6 sm:right-6 sm:top-6">
-                    <span
-                      data-hero-video-title
-                      className="inline-block rounded-full border border-white/15 bg-plum/95 px-3 py-2 text-[9px] font-bold uppercase leading-4 tracking-[0.1em] text-amber shadow-md sm:text-[10px]"
-                    >
-                      Troy’s patient story · 30 seconds
-                    </span>
-                  </span>
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span
-                      data-hero-video-play
-                      className="grid h-12 w-12 place-items-center rounded-full bg-white/90 text-plum shadow-xl transition duration-200 group-hover:scale-105 sm:h-16 sm:w-16"
-                    >
-                      <Play className="ml-1 h-5 w-5 fill-current sm:h-6 sm:w-6" />
-                    </span>
-                  </span>
-                  <span className="absolute bottom-0 left-0 right-0 p-4 text-white sm:p-6">
-                    <span
-                      data-hero-video-caption
-                      className="block font-display text-lg leading-tight sm:text-2xl"
-                    >
-                      From dental fear to smiling and eating again.
-                    </span>
-                  </span>
                 </button>
+                <p className="px-1 text-[10px] leading-4 text-ink/50">
+                  Individual patient experiences and results vary.
+                </p>
                 <div className="rounded-[1.5rem] border border-plum/10 bg-white p-6 shadow-[0_18px_50px_rgba(53,17,61,0.07)]">
-                  <Kicker tone="muted">Why the $18,000 offer stands out</Kicker>
+                  <Kicker tone="muted">What $15,000 covers</Kicker>
                   <div className="mt-4 space-y-3">
                     {[
-                      [
-                        "Final zirconia included",
-                        "Not an acrylic final bridge",
-                      ],
-                      [
-                        "No hidden treatment upsells",
-                        "IV sedation is optional and priced separately",
-                      ],
-                      [
-                        "Lifetime zirconia warranty*",
-                        "Prescribed maintenance and written terms apply",
-                      ],
-                    ].map(([title, detail]) => (
-                      <div key={title} className="flex items-start gap-3">
+                      "Fixed teeth on treatment day, not a removable denture",
+                      "Implants, extractions and grafting included in your plan",
+                      "Follow-up care through final delivery",
+                      "Every price explained before treatment begins, including optional IV sedation",
+                      "Final zirconia available for $3,000 more, your choice",
+                    ].map(item => (
+                      <div key={item} className="flex items-start gap-3">
                         <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mist text-orchid">
                           <Check className="h-3.5 w-3.5" strokeWidth={3} />
                         </span>
-                        <div>
-                          <p className="text-sm font-bold text-plum">{title}</p>
-                          <p className="mt-0.5 text-xs leading-5 text-ink/48">
-                            {detail}
-                          </p>
-                        </div>
+                        <p className="text-sm font-semibold leading-6 text-plum">
+                          {item}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="team" className="section-space bg-white">
+            <div className="container">
+              <Kicker>Experience behind your new smile</Kicker>
+              <SectionTitle>Meet Dr. Oleg Krivichkin.</SectionTitle>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-ink/55">
+                An NYU-trained dentist, advanced smile-design training, and a
+                full-mouth restoration team focused on your confidence, comfort,
+                and a smile that feels like you.
+              </p>
+              <div className="mt-10 overflow-hidden rounded-[2rem] bg-plum text-white shadow-[0_28px_85px_rgba(53,17,61,0.18)]">
+                <div className="grid lg:grid-cols-[0.42fr_0.58fr]">
+                  <div className="relative min-h-[460px] overflow-hidden bg-[#2d2027] lg:min-h-[620px]">
+                    <img
+                      src="/images/dr-oleg-preferred_420e0c72.jpg"
+                      alt="Dr. Oleg Krivichkin in his white clinical coat"
+                      className="absolute inset-0 h-full w-full object-cover object-[center_16%]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-plum/90 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-7 sm:p-9">
+                      <p className="eyebrow text-amber">Meet your dentist</p>
+                      <h3 className="mt-2 font-display text-4xl">
+                        Dr. Oleg Krivichkin, DDS
+                      </h3>
+                      <p className="mt-2 text-sm font-bold text-white/68">
+                        Practice partner · Full-mouth restoration team
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
+                    <Kicker tone="amber">
+                      Advanced training. Personal care.
+                    </Kicker>
+                    <h3 className="mt-5 font-display text-[clamp(2rem,3.4vw,3.35rem)] font-semibold leading-[1.06] tracking-[-0.035em]">
+                      Your new smile deserves an experienced eye.
+                    </h3>
+                    <div className="mt-6 space-y-4 text-sm leading-7 text-white/75 sm:text-[15px]">
+                      <p>
+                        Dr. Oleg brings extensive cosmetic dentistry and
+                        smile-makeover experience to Southfield’s full-mouth
+                        restoration team. His approach considers how your new
+                        teeth look, fit, and work together, not just replacing
+                        missing teeth.
+                      </p>
+                    </div>
+                    <div className="mt-6 space-y-4 border-t border-white/12 pt-6">
+                      <div className="flex items-start gap-3">
+                        <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber" />
+                        <div>
+                          <p className="text-sm font-bold">
+                            2 dental degrees · NYU-trained DDS
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-white/65">
+                            Dentistry education in Moscow and a second dental
+                            degree with honors from New York University.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber" />
+                        <div>
+                          <p className="text-sm font-bold">
+                            Advanced Hornbrook smile-design training
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-white/65">
+                            Hands-on cosmetic dentistry training focused on
+                            smile design and enhancement.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  data-doctor-authority-stats
+                  className="grid grid-cols-3 border-t border-white/10 bg-white/[0.04]"
+                >
+                  {doctorAuthorityStats.map(({ value, label, detail }) => (
+                    <div
+                      key={label}
+                      className="min-w-0 border-r border-white/10 px-2 py-5 last:border-0 sm:p-6"
+                    >
+                      <p className="font-display text-[clamp(1.375rem,6vw,2.5rem)] font-bold leading-none tracking-tight text-amber">
+                        {value.endsWith("+") ? (
+                          <CountUpNumber
+                            target={Number(value.replace(/\D/g, ""))}
+                            suffix="+"
+                          />
+                        ) : (
+                          value
+                        )}
+                      </p>
+                      <p className="mt-2 text-[11px] font-bold leading-4 text-white/90 sm:text-xs sm:leading-5">
+                        {label}
+                      </p>
+                      {detail && (
+                        <p className="mt-1 text-[10px] leading-4 text-white/65">
+                          {detail}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-[1.5rem] border border-plum/10 bg-cream p-6 sm:flex-row sm:items-center">
+                <div>
+                  <Kicker>Patient-reviewed care</Kicker>
+                  <p className="mt-2 text-sm leading-6 text-ink/68">
+                    See independent patient feedback before choosing your
+                    implant team.
+                  </p>
+                </div>
+                <GoogleReviewBadge compact placement="doctor" />
+              </div>
+            </div>
+          </section>
+
+          <section id="reviews" className="section-space bg-white">
+            <div className="container">
+              <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-14">
+                <div>
+                  <Kicker>Implant patient feedback</Kicker>
+                  <SectionTitle>
+                    Real patients. Real reasons to feel confident.
+                  </SectionTitle>
+                  <p className="mt-5 max-w-xl text-lg leading-8 text-ink/62">
+                    Patients describe feeling heard, comfortable, and confident
+                    in their results. These are the outcomes people care about
+                    before making the call.
+                  </p>
+                </div>
+                <div className="rounded-[2rem] bg-gradient-to-br from-cream via-white to-orchid/[0.08] p-3 ring-1 ring-plum/8 sm:p-4">
+                  <GoogleReviewBadge large placement="implant_reviews" />
+                  <p className="px-3 pb-2 pt-4 text-sm leading-6 text-ink/58 sm:px-5">
+                    Thousands of patients have shared their experience with
+                    Southfield Family Dental Center on Google.
+                  </p>
+                </div>
+              </div>
+              <p className="mt-8 text-xs font-bold uppercase tracking-[0.12em] text-orchid lg:hidden">
+                Swipe to read more patient stories →
+              </p>
+              <div
+                className="-mr-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 pr-5 sm:mr-0 sm:gap-5 lg:mt-10 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0 lg:pr-0"
+                role="region"
+                aria-label="Patient review cards"
+                tabIndex={0}
+              >
+                {reviewProof.map(review => (
+                  <article
+                    key={review.name}
+                    id={`review-${review.id}`}
+                    className="flex w-[min(82vw,350px)] shrink-0 snap-start flex-col justify-between rounded-[1.6rem] border border-plum/10 bg-cream p-6 shadow-[0_16px_45px_rgba(53,17,61,0.055)] sm:p-8 lg:min-h-[340px] lg:w-auto"
+                  >
+                    <div>
+                      <div
+                        className="flex items-center gap-1 text-[#f4a321]"
+                        aria-label="Five star patient feedback"
+                      >
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <Star key={star} className="h-4 w-4 fill-current" />
+                        ))}
+                      </div>
+                      <Quote className="mt-7 h-7 w-7 text-orchid" />
+                      <blockquote className="mt-5 font-display text-[1.45rem] font-semibold leading-[1.2] tracking-[-0.025em] text-plum sm:text-[1.55rem]">
+                        “{review.quote}”
+                      </blockquote>
+                    </div>
+                    <div className="mt-8 border-t border-plum/10 pt-5">
+                      <p className="text-sm font-bold text-ink">
+                        {review.name}
+                      </p>
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-ink/42">
+                        {review.label}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-5 text-xs leading-5 text-ink/42">
+                Implant patient stories are quoted from Southfield’s published
+                patient pages; the Google badge reflects the practice’s overall
+                Google rating. Individual experiences and results vary.
+              </p>
+              <div className="mt-7 flex flex-col items-start justify-between gap-5 rounded-[1.5rem] bg-plum p-6 text-white sm:flex-row sm:items-center sm:p-7">
+                <div className="max-w-2xl">
+                  <p className="font-display text-2xl font-semibold leading-tight tracking-[-0.025em] text-white sm:text-3xl">
+                    You deserve the same clarity before choosing your new smile.
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-white/66">
+                    Call Southfield for a free implant second opinion and get
+                    your questions answered directly.
+                  </p>
+                </div>
+                <ConversionActions dark compact placement="implant_reviews" />
               </div>
             </div>
           </section>
@@ -927,11 +1172,9 @@ export default function Home() {
                   <SectionTitle>PMMA vs. zirconia</SectionTitle>
                 </div>
                 <p className="max-w-2xl text-base leading-7 text-ink/58">
-                  PMMA is a strong dental acrylic that works well for
-                  treatment-day teeth and is easier to adjust. Zirconia is a
-                  stronger, smoother ceramic designed for the final bridge. Most
-                  zirconia treatment paths use both materials at different
-                  stages.
+                  You choose the final material. PMMA acrylic finishes at
+                  $15,000; a final zirconia bridge finishes at $18,000. Both
+                  start the same way — fixed teeth on treatment day.
                 </p>
               </div>
 
@@ -966,6 +1209,10 @@ export default function Home() {
                         "The $15,000 option finishes with PMMA teeth",
                         "neutral",
                       ],
+                      [
+                        "Warranty terms for PMMA are provided in writing at your consultation",
+                        "neutral",
+                      ],
                     ].map(([item, kind]) => (
                       <p
                         key={item}
@@ -996,6 +1243,28 @@ export default function Home() {
                       </h3>
                     </div>
                   </div>
+                  <figure className="mt-6 grid grid-cols-[112px_1fr] items-center gap-3 rounded-2xl bg-white p-3 text-plum sm:grid-cols-[164px_1fr] sm:gap-4 sm:p-4">
+                    <img
+                      src="/images/zirconia-implant-illustration_20e39b51.webp"
+                      alt="Illustration of a full-arch zirconia bridge secured to dental implants"
+                      width={336}
+                      height={319}
+                      loading="lazy"
+                      className="h-auto w-full object-contain"
+                    />
+                    <figcaption>
+                      <p className="text-xs font-bold leading-5 sm:text-sm">
+                        Your final smile, fixed in place.
+                      </p>
+                      <p className="mt-1 text-[11px] leading-5 text-ink/65 sm:text-xs">
+                        A zirconia bridge attaches to your implants, not a
+                        removable denture.
+                      </p>
+                      <p className="mt-2 text-[9px] text-ink/45">
+                        Treatment illustration.
+                      </p>
+                    </figcaption>
+                  </figure>
                   <p className="mt-6 text-base leading-7 text-white/68">
                     Think of zirconia as a strong, smooth dental ceramic. It is
                     built for the final bridge and better resists everyday wear,
@@ -1074,12 +1343,12 @@ export default function Home() {
                   Get a free second opinion before you decide.
                 </h2>
                 <p className="mt-5 max-w-xl text-base leading-7 text-white/68">
-                  Bring another clinic’s quote, or just your questions. We’ll
-                  talk through Southfield’s two full-arch options and what each
-                  one means for your smile and your budget.
+                  Bring your questions or another clinic’s quote. Leave knowing
+                  what’s included, which final teeth you’re choosing, and your
+                  complete treatment price.
                 </p>
                 <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber/35 bg-amber/10 px-4 py-2 text-xs font-bold text-amber">
-                  <Check className="h-4 w-4" /> No obligation to choose that day
+                  <Check className="h-4 w-4" /> No obligation to start treatment
                 </p>
               </div>
               <div>
@@ -1090,23 +1359,23 @@ export default function Home() {
                   {[
                     [
                       "01",
-                      "Which final teeth you’re comparing",
-                      "$15k fixed PMMA acrylic or $18k final zirconia, per arch.",
+                      "Your two fixed-teeth options",
+                      "$15,000 PMMA acrylic or $18,000 final zirconia for one upper or lower arch.",
                     ],
                     [
                       "02",
-                      "What’s in your plan",
-                      "Treatment steps, healing teeth, final teeth and follow-up care.",
+                      "What’s included",
+                      "Implants, planned tooth removal and grafting, fixed teeth and follow-up care.",
                     ],
                     [
                       "03",
                       "Your complete price",
-                      "What the offer includes and what optional IV sedation would add.",
+                      "Know your treatment total and the separate cost of IV sedation if you choose it.",
                     ],
                     [
                       "04",
-                      "The next step",
-                      "Ask every question before you decide how to move forward.",
+                      "A decision without pressure",
+                      "Get your questions answered. You don’t have to start treatment to get clarity.",
                     ],
                   ].map(([number, title, detail]) => (
                     <div
@@ -1444,9 +1713,9 @@ export default function Home() {
                   </SectionTitle>
                 </div>
                 <p className="max-w-2xl text-base leading-7 text-ink/58">
-                  A lower price can mean PMMA acrylic instead of a final
-                  zirconia bridge. When any clinic advertises a lower price, ask
-                  one simple question: what material do I finish with?
+                  Prices look similar until you compare what’s inside them. Ask
+                  any clinic the same questions you’d ask us — we’ve put our
+                  answers in writing.
                 </p>
               </div>
               <p className="mt-5 text-xs leading-5 text-ink/55 sm:hidden">
@@ -1543,160 +1812,100 @@ export default function Home() {
             </div>
           </section>
 
-          {/* ZIP structure: large included card + smaller exclusion card */}
+          {/* Both advertised options show their full inclusions and optional costs. */}
           <section id="included" className="section-space bg-mist">
             <div className="container">
               <Kicker>No mystery line items</Kicker>
-              <SectionTitle>What the $18,000 covers.</SectionTitle>
-              <div className="mt-10 grid gap-5 lg:grid-cols-[1.36fr_0.64fr]">
-                <div className="grid overflow-hidden rounded-[1.75rem] border border-plum/10 bg-white shadow-[0_18px_55px_rgba(53,17,61,0.07)] md:grid-cols-[0.68fr_1.32fr]">
-                  <div className="relative h-[290px] overflow-hidden bg-[#09090c] md:h-full md:min-h-[430px]">
-                    <img
-                      src="/images/zirconia-arch-black-studio-960_7694b2ae.webp"
-                      alt="Illustrative full-arch zirconia bridge with natural-looking ceramic teeth and implant connections against a dark reflective background"
-                      className="absolute inset-0 h-full w-full object-cover object-center"
-                    />
-                    <span className="absolute bottom-4 left-4 rounded-full border border-white/20 bg-black/50 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-white/85 backdrop-blur-sm">
-                      Illustrative bridge image
-                    </span>
-                  </div>
-                  <div className="p-7 sm:p-9">
-                    <Kicker>Included, per arch</Kicker>
-                    <ul className="mt-6 space-y-4">
-                      {included.map(item => (
-                        <li
-                          key={item}
-                          className="flex gap-3 text-sm leading-6 text-ink/65"
+              <SectionTitle>What each option covers.</SectionTitle>
+              <div className="mt-8 grid items-stretch gap-5 lg:mt-10 lg:grid-cols-2">
+                {[
+                  {
+                    material: "Fixed PMMA acrylic teeth",
+                    price: "$15,000",
+                    items: pmmaIncluded,
+                    zirconia: false,
+                  },
+                  {
+                    material: "Final zirconia bridge",
+                    price: "$18,000",
+                    items: zirconiaIncluded,
+                    zirconia: true,
+                  },
+                ].map(option => (
+                  <article
+                    key={option.price}
+                    data-inclusion-option={
+                      option.zirconia ? "zirconia" : "pmma"
+                    }
+                    className={`flex flex-col overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_18px_55px_rgba(53,17,61,0.07)] ${option.zirconia ? "border-amber" : "border-plum/12"}`}
+                  >
+                    <div
+                      className={`p-6 sm:p-8 ${option.zirconia ? "bg-plum text-white" : "bg-cream text-plum"}`}
+                    >
+                      <p
+                        className={`eyebrow ${option.zirconia ? "text-amber" : "text-orchid"}`}
+                      >
+                        {option.zirconia
+                          ? "+$3,000 for final zirconia"
+                          : "Full-arch treatment offer"}
+                      </p>
+                      <div className="mt-3 flex flex-wrap items-baseline gap-3">
+                        <p className="font-display text-5xl font-bold leading-none tracking-[-0.045em] sm:text-6xl">
+                          {option.price}
+                        </p>
+                        <p
+                          className={`whitespace-nowrap text-sm font-bold uppercase tracking-[0.1em] ${option.zirconia ? "text-white/65" : "text-ink/55"}`}
                         >
-                          <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mist text-orchid">
-                            <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                          per arch
+                        </p>
+                      </div>
+                      <h3 className="mt-4 font-display text-xl font-bold leading-snug sm:text-2xl">
+                        {option.material}
+                      </h3>
+                    </div>
+                    <div className="flex flex-1 flex-col p-6 sm:p-8">
+                      <Kicker>Included, per arch</Kicker>
+                      <ul className="mt-5 space-y-4">
+                        {option.items.map((item, index) => (
+                          <li
+                            key={item}
+                            className={`flex gap-3 text-sm leading-6 ${option.zirconia && index >= pmmaIncluded.length ? "font-semibold text-plum" : "text-ink/65"}`}
+                          >
+                            <span
+                              className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${option.zirconia && index >= pmmaIncluded.length ? "bg-amber text-plum" : "bg-mist text-orchid"}`}
+                            >
+                              <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                            </span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              <div className="mt-5 grid gap-5 rounded-[1.5rem] border border-plum/10 bg-white p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+                <div>
+                  <Kicker tone="muted">Optional, quoted separately</Kicker>
+                  <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-plum sm:text-3xl">
+                    IV sedation, if you choose it.
+                  </h3>
                 </div>
-                <div className="flex flex-col justify-between rounded-[1.75rem] border border-plum/10 bg-white p-7 sm:p-9">
-                  <div>
-                    <Kicker tone="muted">Not included</Kicker>
-                    <h3 className="mt-4 font-display text-3xl leading-tight text-plum">
-                      IV sedation, if you choose it.
-                    </h3>
-                    <p className="mt-4 text-sm leading-7 text-ink/62">
-                      It is available here, optional, and quoted up front. That
-                      disclosure happens before treatment, not once you are in
-                      the chair.
-                    </p>
-                  </div>
-                  <div className="mt-8 flex gap-3 border-t border-plum/10 pt-6">
-                    <Info className="h-5 w-5 shrink-0 text-orchid" />
-                    <p className="text-sm leading-6 text-ink/55">
-                      Your consultation explains the final material, included
-                      treatment, optional IV sedation, and total price before
-                      treatment begins.
-                    </p>
-                  </div>
-                </div>
+                <p className="flex gap-3 text-sm leading-7 text-ink/62">
+                  <Info className="mt-1 h-5 w-5 shrink-0 text-orchid" />
+                  <span>
+                    It is available here, optional, and quoted up front for
+                    either option. Your consultation explains the final
+                    material, included treatment, optional IV sedation, and
+                    total price before treatment begins.
+                  </span>
+                </p>
               </div>
               <ConversionPrompt
                 title="Ready to compare your two Southfield options?"
                 note="See the $15,000 PMMA acrylic option and the $18,000 final-zirconia option side by side."
                 placement="inclusions"
               />
-            </div>
-          </section>
-
-          {/* Verified clinician proof only; unfinished provider placeholders removed */}
-          <section id="team" className="section-space bg-white">
-            <div className="container">
-              <Kicker>Named clinician. Local practice.</Kicker>
-              <SectionTitle>Meet Dr. Oleg Krivichkin.</SectionTitle>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-ink/55">
-                Your consultation happens at Southfield Family Dental, where the
-                team builds a clear plan around your smile goals, not a preset
-                sales package.
-              </p>
-              <div className="mt-10 overflow-hidden rounded-[2rem] bg-plum text-white shadow-[0_28px_85px_rgba(53,17,61,0.18)]">
-                <div className="grid lg:grid-cols-[0.42fr_0.58fr]">
-                  <div className="relative min-h-[460px] overflow-hidden bg-[#2d2027] lg:min-h-[620px]">
-                    <img
-                      src="/images/dr-oleg-preferred_420e0c72.jpg"
-                      alt="Dr. Oleg Krivichkin in his white clinical coat"
-                      className="absolute inset-0 h-full w-full object-cover object-[center_16%]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-plum/90 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-7 sm:p-9">
-                      <p className="eyebrow text-amber">Meet your dentist</p>
-                      <h3 className="mt-2 font-display text-4xl">
-                        Dr. Oleg Krivichkin
-                      </h3>
-                      <p className="mt-2 text-sm font-bold text-white/68">
-                        Practice partner · Full-mouth restoration team
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
-                    <Kicker tone="amber">
-                      A career built inside Southfield Family Dental
-                    </Kicker>
-                    <Quote className="mt-7 h-8 w-8 text-amber" />
-                    <blockquote className="mt-5 font-display text-[clamp(2.15rem,4vw,3.75rem)] leading-[1.05] tracking-[-0.045em]">
-                      “Nothing makes a bigger or faster impression than a
-                      person’s smile.”
-                    </blockquote>
-                    <div className="mt-8 space-y-4 text-[15px] leading-7 text-white/70">
-                      <p>
-                        After beginning alongside practice founder Dr. Noah Levi
-                        as a dental assistant, Dr. Krivichkin attended the New
-                        York University College of Dentistry and graduated near
-                        the top of his class.
-                      </p>
-                      <p>
-                        He returned to Southfield Family Dental in 2007 and
-                        became a partner in 2011. Today, he is part of the
-                        practice’s multidisciplinary team for cosmetic dentistry
-                        and full-mouth implant restoration.
-                      </p>
-                    </div>
-                    <div className="mt-8 flex items-center gap-3 border-t border-white/12 pt-6">
-                      <BadgeCheck className="h-6 w-6 shrink-0 text-amber" />
-                      <p className="text-sm font-bold">
-                        Named an Hour Detroit Top Dentist in 2024 and 2025
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid border-t border-white/10 sm:grid-cols-3">
-                  {[
-                    ["NYU", "College of Dentistry"],
-                    ["2007", "Returned to Southfield Family Dental"],
-                    ["2011", "Became a practice partner"],
-                  ].map(([value, label]) => (
-                    <div
-                      key={label}
-                      className="border-b border-white/10 p-6 last:border-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
-                    >
-                      <p className="font-display text-4xl text-amber">
-                        {value}
-                      </p>
-                      <p className="mt-2 text-[11px] font-bold uppercase leading-5 tracking-[0.12em] text-white/55">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-[1.5rem] border border-plum/10 bg-cream p-6 sm:flex-row sm:items-center">
-                <div>
-                  <Kicker>Patient-reviewed care</Kicker>
-                  <p className="mt-2 text-sm leading-6 text-ink/68">
-                    See independent patient feedback before choosing your
-                    implant team.
-                  </p>
-                </div>
-                <GoogleReviewBadge compact placement="doctor" />
-              </div>
             </div>
           </section>
 
@@ -1842,31 +2051,45 @@ export default function Home() {
                       fileId: "1ux5NyKGP17CGwkTNcRIt22KhV6IIZiL6",
                     });
                   }}
-                  className="group relative min-h-[390px] overflow-hidden text-left lg:min-h-[560px]"
+                  aria-label="Watch Mike’s patient story"
+                  data-mike-video-thumbnail
+                  className="group relative h-[225px] min-w-0 w-full overflow-hidden border-b border-plum/10 bg-white text-left sm:aspect-[16/10] sm:h-auto lg:aspect-auto lg:min-h-[560px] lg:border-b-0 lg:border-r"
                 >
                   <img
-                    src="/images/mike-frame_10786298.jpg"
-                    alt="Mike’s full-mouth implant before image shown in his Southfield patient story"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                    src="/images/mike-interview-thumbnail_bac10697.webp"
+                    alt="Mike sharing his full-mouth implant experience in his real Southfield interview"
+                    loading="lazy"
+                    className="absolute right-0 top-0 h-full w-[62%] object-cover transition duration-300 group-hover:scale-[1.02]"
                   />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/8 to-transparent" />
-                  <span className="absolute inset-0 grid place-items-center">
-                    <span className="grid h-20 w-20 place-items-center rounded-full bg-white/92 text-plum shadow-2xl transition duration-200 group-hover:scale-105">
-                      <Play className="ml-1 h-7 w-7 fill-current" />
+                  <span className="absolute inset-0 bg-[linear-gradient(90deg,#fff_0%,#fff_30%,rgba(255,255,255,0.96)_42%,rgba(255,255,255,0.55)_53%,rgba(255,255,255,0)_66%)]" />
+                  <span className="absolute inset-y-0 left-0 flex w-[58%] flex-col justify-between p-4 sm:p-8 lg:p-9">
+                    <span>
+                      <span className="block text-[8px] font-extrabold uppercase tracking-[0.13em] text-orchid sm:text-[10px]">
+                        Real patient story
+                      </span>
+                      <span className="mt-3 block font-display text-[clamp(1.05rem,5.9vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.035em] text-plum lg:mt-7 lg:text-[2.75rem]">
+                        <span className="block">A New Smile.</span>
+                        <span className="block">A New Chapter.</span>
+                      </span>
+                      <span className="mt-3 block text-[10px] font-semibold leading-4 text-ink/65 sm:text-sm sm:leading-6 lg:mt-5">
+                        Mike’s full-mouth implant experience.
+                      </span>
+                    </span>
+                    <span className="mt-3 block">
+                      <span className="mb-3 block h-0.5 w-12 bg-amber" />
+                      <img
+                        src="/images/logo_849d8385.png"
+                        alt="Southfield Family Dental Center"
+                        className="h-auto w-24 sm:w-32 lg:w-36"
+                      />
+                      <span className="mt-3 inline-flex items-center gap-2 text-[10px] font-bold text-orchid sm:text-xs lg:mt-5">
+                        Watch Mike’s story{" "}
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
                     </span>
                   </span>
-                  <span className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-5 p-7 text-white sm:p-9">
-                    <span>
-                      <span className="eyebrow text-amber">
-                        Watch Mike’s story
-                      </span>
-                      <span className="mt-2 block font-display text-3xl font-semibold">
-                        Full-mouth implant transformation
-                      </span>
-                    </span>
-                    <span className="hidden rounded-full border border-white/25 bg-black/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] backdrop-blur sm:block">
-                      Patient spotlight
-                    </span>
+                  <span className="absolute left-[76%] top-[74%] grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white bg-plum/85 text-white shadow-[0_8px_30px_rgba(53,17,61,0.25)] transition duration-200 group-hover:scale-105 sm:h-16 sm:w-16">
+                    <Play className="ml-1 h-5 w-5 fill-current sm:h-6 sm:w-6" />
                   </span>
                 </button>
                 <div className="flex flex-col justify-between p-8 text-white sm:p-10 lg:p-12">
@@ -1906,6 +2129,74 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+              <article
+                data-team-video-card
+                className="mt-6 grid overflow-hidden rounded-[1.75rem] border border-plum/10 bg-white shadow-[0_18px_55px_rgba(53,17,61,0.07)] md:grid-cols-[0.85fr_1.15fr]"
+              >
+                <button
+                  type="button"
+                  aria-label="Watch Anicia’s care-team introduction"
+                  onClick={() => {
+                    trackEvent("video_start", {
+                      story_id: "anicia",
+                      placement: "care_team",
+                    });
+                    setActiveVideo({
+                      name: "Anicia | Front Desk Supervisor",
+                      fileId: "1PVbWmNrnLL3DJ971GWn0rdORSGePBht0",
+                      kind: "team",
+                    });
+                  }}
+                  className="group relative block overflow-hidden bg-plum text-left"
+                >
+                  <img
+                    src="/images/anicia-care-team_92f11514.webp"
+                    alt="Anicia Jones, Southfield Family Dental’s front desk supervisor, introduces the team"
+                    width={1280}
+                    height={720}
+                    loading="lazy"
+                    className="aspect-video h-full w-full object-cover"
+                  />
+                  <span className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/5" />
+                  <span className="absolute left-1/2 top-1/2 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-plum shadow-xl transition duration-200 group-hover:scale-105">
+                    <Play className="ml-1 h-5 w-5 fill-current" />
+                  </span>
+                  <span className="absolute right-3 top-3 rounded-full bg-plum/95 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-amber">
+                    1-minute introduction
+                  </span>
+                </button>
+                <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
+                  <Kicker>Meet the people behind your care</Kicker>
+                  <h3 className="mt-3 font-display text-2xl font-semibold leading-tight tracking-[-0.025em] text-plum sm:text-3xl">
+                    A familiar face before your first visit.
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-ink/65">
+                    Meet Anicia, Southfield’s front desk supervisor. Get a feel
+                    for the people you’ll meet when you call or come in to talk
+                    about your smile.
+                  </p>
+                  <p className="mt-4 text-xs font-bold text-plum">
+                    Anicia Jones · Front Desk Supervisor
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackEvent("video_start", {
+                        story_id: "anicia",
+                        placement: "care_team_text",
+                      });
+                      setActiveVideo({
+                        name: "Anicia | Front Desk Supervisor",
+                        fileId: "1PVbWmNrnLL3DJ971GWn0rdORSGePBht0",
+                        kind: "team",
+                      });
+                    }}
+                    className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 text-sm font-bold text-orchid"
+                  >
+                    Meet Anicia <CirclePlay className="h-5 w-5" />
+                  </button>
+                </div>
+              </article>
               <ConversionPrompt
                 title="Ready to talk through your own smile?"
                 note="Bring your questions or another clinic’s treatment plan and leave with two clear options and the full numbers."
@@ -1915,88 +2206,6 @@ export default function Home() {
                 Individual experiences are not guarantees. Treatment, comfort,
                 recovery, and results vary.
               </p>
-            </div>
-          </section>
-
-          <section id="reviews" className="section-space bg-white">
-            <div className="container">
-              <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:gap-14">
-                <div>
-                  <Kicker>Implant patient feedback</Kicker>
-                  <SectionTitle>
-                    Real patients. Real reasons to feel confident.
-                  </SectionTitle>
-                  <p className="mt-5 max-w-xl text-lg leading-8 text-ink/62">
-                    Patients describe feeling heard, comfortable, and confident
-                    in their results. These are the outcomes people care about
-                    before making the call.
-                  </p>
-                </div>
-                <div className="rounded-[2rem] bg-gradient-to-br from-cream via-white to-orchid/[0.08] p-3 ring-1 ring-plum/8 sm:p-4">
-                  <GoogleReviewBadge large placement="implant_reviews" />
-                  <p className="px-3 pb-2 pt-4 text-sm leading-6 text-ink/58 sm:px-5">
-                    Thousands of patients have shared their experience with
-                    Southfield Family Dental Center on Google.
-                  </p>
-                </div>
-              </div>
-              <p className="mt-8 text-xs font-bold uppercase tracking-[0.12em] text-orchid lg:hidden">
-                Swipe to read more patient stories →
-              </p>
-              <div
-                className="-mr-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-5 pr-5 sm:mr-0 sm:gap-5 lg:mt-10 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0 lg:pr-0"
-                role="region"
-                aria-label="Patient review cards"
-                tabIndex={0}
-              >
-                {reviewProof.map(review => (
-                  <article
-                    key={review.name}
-                    id={`review-${review.id}`}
-                    className="flex w-[min(82vw,350px)] shrink-0 snap-start flex-col justify-between rounded-[1.6rem] border border-plum/10 bg-cream p-6 shadow-[0_16px_45px_rgba(53,17,61,0.055)] sm:p-8 lg:min-h-[340px] lg:w-auto"
-                  >
-                    <div>
-                      <div
-                        className="flex items-center gap-1 text-[#f4a321]"
-                        aria-label="Five star patient feedback"
-                      >
-                        {[1, 2, 3, 4, 5].map(star => (
-                          <Star key={star} className="h-4 w-4 fill-current" />
-                        ))}
-                      </div>
-                      <Quote className="mt-7 h-7 w-7 text-orchid" />
-                      <blockquote className="mt-5 font-display text-[1.45rem] font-semibold leading-[1.2] tracking-[-0.025em] text-plum sm:text-[1.55rem]">
-                        “{review.quote}”
-                      </blockquote>
-                    </div>
-                    <div className="mt-8 border-t border-plum/10 pt-5">
-                      <p className="text-sm font-bold text-ink">
-                        {review.name}
-                      </p>
-                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-ink/42">
-                        {review.label}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              <p className="mt-5 text-xs leading-5 text-ink/42">
-                Implant patient stories are quoted from Southfield’s published
-                patient pages; the Google badge reflects the practice’s overall
-                Google rating. Individual experiences and results vary.
-              </p>
-              <div className="mt-7 flex flex-col items-start justify-between gap-5 rounded-[1.5rem] bg-plum p-6 text-white sm:flex-row sm:items-center sm:p-7">
-                <div className="max-w-2xl">
-                  <p className="font-display text-2xl font-semibold leading-tight tracking-[-0.025em] text-white sm:text-3xl">
-                    You deserve the same clarity before choosing your new smile.
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-white/66">
-                    Call Southfield for a free implant second opinion and get
-                    your questions answered directly.
-                  </p>
-                </div>
-                <ConversionActions dark compact placement="implant_reviews" />
-              </div>
             </div>
           </section>
 
@@ -2091,6 +2300,10 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+              <p className="mt-8 text-sm leading-6 text-ink/58">
+                At $15,000, financing works the same way — your amount, rate and
+                payment depend on your application.
+              </p>
             </div>
           </section>
 
@@ -2104,7 +2317,7 @@ export default function Home() {
                   and final zirconia easy to understand.
                 </p>
                 <div className="mt-7">
-                  <ConversionActions placement="faq_intro" />
+                  <ConversionActions narrow placement="faq_intro" />
                 </div>
               </div>
               <div className="divide-y divide-plum/10 overflow-hidden rounded-[1.75rem] border border-plum/10 bg-cream shadow-[0_18px_55px_rgba(53,17,61,0.06)]">
@@ -2142,9 +2355,9 @@ export default function Home() {
                   Start with a free implant second opinion.
                 </SectionTitle>
                 <p className="mt-5 max-w-xl text-lg leading-8 text-ink/62">
-                  Compare PMMA and zirconia, what the $18,000 offer includes,
-                  optional IV sedation, and the complete price before you
-                  decide.
+                  See what’s included in the $15,000 offer, compare the final
+                  zirconia option, and understand optional IV sedation and the
+                  complete price before you decide.
                 </p>
                 <div className="mt-8">
                   <OfficeCountdown />
@@ -2348,7 +2561,11 @@ export default function Home() {
             <div className="w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/15 bg-black shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
               <div className="flex items-center justify-between border-b border-white/10 bg-plum px-5 py-4 text-white">
                 <div>
-                  <p className="eyebrow text-amber">Patient testimonial</p>
+                  <p className="eyebrow text-amber">
+                    {activeVideo.kind === "team"
+                      ? "Meet your care team"
+                      : "Patient testimonial"}
+                  </p>
                   <p className="mt-1 font-display text-xl">
                     {activeVideo.name}
                   </p>
