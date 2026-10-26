@@ -881,14 +881,6 @@ export default function Home() {
                     </strong>{" "}
                     IV sedation is optional and quoted separately.
                   </p>
-                  <p className="mt-3 rounded-xl bg-mist px-4 py-2.5 text-xs leading-5 text-plum sm:mt-4 sm:py-3">
-                    <strong>
-                      Choose final zirconia for $3,000 more per arch.
-                    </strong>{" "}
-                    Receive PMMA teeth during healing, followed by a stronger
-                    ceramic bridge with a lifetime zirconia warranty, subject to
-                    prescribed maintenance and written terms.
-                  </p>
                   <WeeklyPromotionCountdown />
                 </div>
                 <div className="mt-5 sm:mt-6">
@@ -949,7 +941,6 @@ export default function Home() {
                       "Implants, extractions and grafting included in your plan",
                       "Follow-up care through final delivery",
                       "Every price explained before treatment begins, including optional IV sedation",
-                      "Final zirconia available for $3,000 more, your choice",
                     ].map(item => (
                       <div key={item} className="flex items-start gap-3">
                         <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mist text-orchid">
