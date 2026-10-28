@@ -55,7 +55,7 @@ The build creates entry files for `/terms-of-service/`, `/privacy-policy/`, `/di
 | Headlines, prices, included treatment, office hours, FAQs, patient quotes | `client/src/pages/Home.tsx` |
 | Colors, fonts, spacing, responsive styling | `client/src/index.css` |
 | Google Fonts and search/social metadata | `client/index.html` |
-| GA4 and WhatConverts tracking tags | `client/index.html` |
+| GA4, Microsoft Clarity, and WhatConverts tracking tags | `client/index.html` |
 | Phone number (DNI swap number) | `client/src/lib/phone.ts` |
 | Weekly promotion display and Eastern-time deadline | `client/src/components/WeeklyPromotionCountdown.tsx`, `client/src/lib/promotionTime.ts` |
 | Hero video loading, reduced-motion behavior, poster fallback | `client/src/components/HeroVideoBackground.tsx` |
@@ -104,14 +104,15 @@ A2P registration, opt-in records, and STOP/HELP handling must be verified with t
 
 ## Analytics and external services
 
-`client/index.html` loads two tags on every page, including the generated policy entries:
+`client/index.html` loads three tags on every page, including the generated policy entries:
 
 - **GA4** (`G-50EEPYREL4`) via gtag.js.
+- **Microsoft Clarity** (project `z4epokot1e`) for session recordings and heatmaps. The appointment form carries `data-clarity-mask="true"` so typed entries are never recorded; keep it if the form is edited. The privacy policy names Clarity, so update it if Clarity is removed or its settings change.
 - **WhatConverts** (profile `177101`) for call tracking, dynamic number insertion, and form tracking. It replaces the swap number (248) 215-2058 in page text and `tel:` links with the visitor's tracking number. Add the `no-swap` class to any element that must keep the original number.
 
 WhatConverts form tracking identifies the appointment form by `id="appointment-request-form"` (also `name="appointment-request-form"`). Keep that ID if the form is edited. The form only mounts when the pop-up opens; WhatConverts re-scans for forms on click and keypress, so it still binds.
 
-Privacy-safe `southfield:analytics` events remain available but are not yet forwarded to GA4. Browser tests block both tracking hosts so CI never sends test traffic or synthetic leads.
+Privacy-safe `southfield:analytics` events remain available but are not yet forwarded to GA4. Browser tests block all three tracking hosts so CI never sends test traffic, recordings, or synthetic leads.
 
 Images are bundled locally and do not need Manus storage. Google Fonts, Google Drive testimonial playback, TrueLark scheduling, and map directions still require internet access. Videos load only when opened. The visual locator map itself is bundled locally.
 

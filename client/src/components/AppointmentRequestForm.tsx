@@ -99,6 +99,8 @@ export default function AppointmentRequestForm({ submitRequest }: FormProps) {
       name="appointment-request-form"
       aria-label="Request an Appointment"
       onSubmit={handleSubmit}
+      // Keep patient entries out of Clarity session recordings.
+      data-clarity-mask="true"
       className="manus-no-record mt-6 space-y-5"
     >
       {!submitRequest && (

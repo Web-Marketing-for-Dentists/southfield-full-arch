@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const TRACKING_HOSTS =
-  /googletagmanager\.com|google-analytics\.com|ksrndkehqnwntyxlhgto\.com|iconnode\.com/;
+  /googletagmanager\.com|google-analytics\.com|ksrndkehqnwntyxlhgto\.com|iconnode\.com|clarity\.ms/;
 // The Pages Function is not served by `vite preview`; tests answer for it so
 // no email is ever sent.
 const LEAD_ENDPOINT = "**/api/appointment-request";
@@ -93,10 +93,11 @@ for (const width of [320, 390, 1440]) {
       exact: true,
     });
     await expect(dialog).toBeVisible();
-    // WhatConverts form tracking is configured against this ID and name.
+    // WhatConverts form tracking is configured against this ID and name, and
+    // Clarity must never record what patients type.
     await expect(
       dialog.locator(
-        'form#appointment-request-form[name="appointment-request-form"]'
+        'form#appointment-request-form[name="appointment-request-form"][data-clarity-mask="true"]'
       )
     ).toHaveCount(1);
     for (const label of ["Full Name", "Phone", "Email", "Message"]) {
@@ -178,7 +179,7 @@ test("a failed delivery keeps entries and points to the phone", async ({
   );
 });
 
-test("noindex, GA4 and WhatConverts ship on every entry page", async ({
+test("noindex, GA4, WhatConverts and Clarity ship on every entry page", async ({
   page,
 }) => {
   await page.route(TRACKING_HOSTS, route => route.abort());
@@ -205,6 +206,10 @@ test("noindex, GA4 and WhatConverts ship on every entry page", async ({
     ).toHaveCount(1);
     await expect(
       page.locator('head link[rel="icon"][href="/favicon-32.png"]')
+    ).toHaveCount(1);
+    // The Clarity loader injects its tag script; the request itself is blocked.
+    await expect(
+      page.locator('script[src="https://www.clarity.ms/tag/z4epokot1e"]')
     ).toHaveCount(1);
   }
 });

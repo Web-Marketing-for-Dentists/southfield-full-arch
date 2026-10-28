@@ -5,7 +5,7 @@ import { PHONE_DISPLAY as PHONE, PHONE_HREF } from "@/lib/phone";
 
 const PRACTICE = "Southfield Family Dental Center";
 const EMAIL = "Southfield.om@guardiandentistry.com";
-const UPDATED = "October 12, 2026";
+const UPDATED = "October 28, 2026";
 
 interface PolicySection {
   id: string;
@@ -286,8 +286,12 @@ const privacySections: PolicySection[] = [
           This site uses Google Analytics to measure site traffic and campaign
           performance, and WhatConverts to attribute phone calls and inquiries
           to the advertising source that led to them. To do this, the site may
-          display a tracking phone number that forwards to the practice, and
-          these services may set cookies or use browser storage. Browser storage
+          display a tracking phone number that forwards to the practice. The
+          site also uses Microsoft Clarity, which records how visitors scroll,
+          click, and move through the page so the practice can improve it.
+          Clarity is configured not to capture what you type into the
+          appointment form. These services may set cookies or use browser
+          storage. Browser storage
           may also be used for site preferences. The current landing page does
           not contain live chat. Additional advertising or remarketing tools, if
           introduced, should be reflected in an updated policy and any required
